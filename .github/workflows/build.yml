@@ -1,0 +1,49 @@
+name: Build DJ HUB
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repo auschecken
+        uses: actions/checkout@v4
+
+      - name: Projektordner suchen
+        id: locate
+        run: |
+          BUILD_FILE=$(find . -maxdepth 4 -name build.gradle -not -path "./.git/*" | head -n 1)
+          if [ -z "$BUILD_FILE" ]; then
+            echo "::error::Keine build.gradle gefunden."
+            exit 1
+          fi
+          PROJECT_DIR=$(dirname "$BUILD_FILE")
+          echo "dir=$PROJECT_DIR" >> "$GITHUB_OUTPUT"
+          echo "Projekt gefunden in: $PROJECT_DIR"
+
+      - name: Java 21 einrichten
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Gradle einrichten
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.1.0'
+
+      - name: Mod bauen
+        working-directory: ${{ steps.locate.outputs.dir }}
+        run: gradle build --no-daemon --stacktrace
+
+      - name: JAR hochladen
+        uses: actions/upload-artifact@v4
+        with:
+          name: DJ-HUB-jar
+          if-no-files-found: error
+          path: |
+            **/build/libs/*.jar
+            !**/build/libs/*-sources.jar
