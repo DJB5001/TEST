@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "djhub",
+  "version": "${version}",
+  "name": "DJ HUB",
+  "description": "Client-seitiges Einstellungsmenue mit /dj - AutoMiner, Auto Sprint, Zoom, HUD und mehr.",
+  "authors": ["DJB5001"],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["de.djhub.DJHubClient"]
+  },
+  "mixins": [
+    {
+      "config": "djhub.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.17.0",
+    "minecraft": "~1.21.11",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
